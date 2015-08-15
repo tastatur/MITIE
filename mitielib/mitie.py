@@ -81,9 +81,9 @@ _f.mitie_extract_binary_relation.restype = ctypes.c_void_p
 _f.mitie_extract_binary_relation.argtypes = ctypes.c_void_p, ctypes.c_void_p, ctypes.c_ulong, ctypes.c_ulong, ctypes.c_ulong, ctypes.c_ulong
 
 def _get_windowed_range(tokens, arg1, arg2):
-    """returns an xrange that spans a range that includes the arg1 and arg2 ranges
+    """returns an range that spans a range that includes the arg1 and arg2 ranges
     along with an additional 5 tokens on each side, subject to the constraint that
-    the returned xrange does not go outside of tokens, where tokens is a list."""
+    the returned range does not go outside of tokens, where tokens is a list."""
     winsize = 5
     begin = min(min(arg1), min(arg2))
     end   = max(max(arg1), max(arg2))+1
@@ -92,7 +92,7 @@ def _get_windowed_range(tokens, arg1, arg2):
     else:
         begin = 0
     end = min(end+winsize, len(tokens))
-    r = xrange(begin, end)
+    r = range(begin, end)
     return r
 
 
@@ -102,10 +102,10 @@ def python_to_mitie_str_array(tokens, r = None):
     freed by the user.
 
     r should be a range that indicates which part of tokens to convert.  If r is not given
-    then it defaults to xrange(len(tokens)) which selects the entirety of tokens to convert.
+    then it defaults to range(len(tokens)) which selects the entirety of tokens to convert.
     """
     if (r == None):
-        r = xrange(len(tokens))
+        r = range(len(tokens))
 
     ctokens = (ctypes.c_char_p*(len(r)+1))()
     i = 0
@@ -113,7 +113,7 @@ def python_to_mitie_str_array(tokens, r = None):
         if (isinstance(tokens[j], tuple)):
             ctokens[i] = tokens[j][0]
         else:
-            ctokens[i] = tokens[j]
+            ctokens[i] = tokens[j].encode('utf-8')
         i = i + 1
     ctokens[i] = None
     return ctokens
@@ -189,7 +189,7 @@ class named_entity_extractor:
 
     def get_possible_ner_tags(self):
         num = _f.mitie_get_num_possible_ner_tags(self.__obj)
-        return [_f.mitie_get_named_entity_tagstr(self.__obj, i) for i in xrange(num)]
+        return [_f.mitie_get_named_entity_tagstr(self.__obj, i) for i in range(num)]
 
     def save_to_disk(self, filename):
         """Save this object to disk.  You recall it from disk with the following Python
@@ -205,11 +205,11 @@ class named_entity_extractor:
         if (dets == None):
             raise Exception("Unable to create entity detections.")
         num = _f.mitie_ner_get_num_detections(dets)
-        temp = ([(xrange(_f.mitie_ner_get_detection_position(dets,i),
+        temp = ([(range(_f.mitie_ner_get_detection_position(dets,i),
             _f.mitie_ner_get_detection_position(dets,i)+_f.mitie_ner_get_detection_length(dets,i)),
             tags[_f.mitie_ner_get_detection_tag(dets,i)],
             _f.mitie_ner_get_detection_score(dets,i)
-            ) for i in xrange(num)])
+            ) for i in range(num)])
         _f.mitie_free(dets)
         return temp
 
@@ -217,7 +217,7 @@ class named_entity_extractor:
         """
         requires
             - arg1 and arg2 are range objects and they don't go outside the
-              range xrange(len(tokens)).
+              range range(len(tokens)).
             - arg1 and arg2 do not overlap
         ensures
             - returns a processed binary relation that describes the relation
@@ -380,7 +380,7 @@ class ner_training_instance:
         return _f.mitie_ner_training_instance_num_entities(self.__obj)
 
     def overlaps_any_entity(self, range):
-        """Takes a xrange and reports if the range overlaps any entities already in this object."""
+        """Takes a range and reports if the range overlaps any entities already in this object."""
         if (len(range) == 0 or max(range) >= self.num_tokens):
             raise Exception("Invalid range given to ner_training_instance.overlaps_any_entity()")
         return _f.mitie_overlaps_any_entity(self.__obj, min(range), len(range)) == 1

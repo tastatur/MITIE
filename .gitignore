@@ -38,3 +38,7 @@ examples/python/rel_classifier.svm
 tools/R-binding/MITIE_*.tar.gz
 tools/R-binding/MITIE/src/dlib/
 tools/R-binding/MITIE/src/mitielib/
+
+#IDEA
+.idea
+__pycache__
