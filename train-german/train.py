@@ -62,13 +62,3 @@ if __name__ == '__main__':
     trainer.num_threads = int(args.threads)
     ner = trainer.train()
     ner.save_to_disk(c_char_p(output_model.encode('utf-8')))
-
-    # Testing
-    tok = ["Ross", "Perot", "wäre", "vielleicht", "ein", "prächtiger", "Diktator", "."]
-    extracted = ner.extract_entities(tok)
-    print("\nEntities found:", extracted)
-    for e in extracted:
-        range = e[0]
-        tag = e[1]
-        entity_text = " ".join(tok[i] for i in range)
-        print("    " + tag + ": " + entity_text)
