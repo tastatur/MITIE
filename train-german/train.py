@@ -48,6 +48,7 @@ if __name__ == '__main__':
     parser.add_argument('-o', '--output')
     parser.add_argument('-i', '--input')
     parser.add_argument('-f', '--features')
+    parser.add_argument('-t', '--threads')
     args = parser.parse_args()
 
     output_model = args.output
@@ -58,7 +59,7 @@ if __name__ == '__main__':
     samples = load_opennlp_samples(corpora)
     for sample in samples:
         trainer.add(sample)
-    trainer.num_threads = 4
+    trainer.num_threads = int(args.threads)
     ner = trainer.train()
     ner.save_to_disk(c_char_p(output_model.encode('utf-8')))
 
