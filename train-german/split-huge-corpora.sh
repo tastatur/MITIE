@@ -5,6 +5,6 @@
 LINES=$(wc -l $1 | awk '{print $1}')
 
 cd ~/masterarbeit-data/mitte/corpora/
-SPLITSIZE=$((${LINES}/2))
-split $1 -l $SPLITSIZE --additional-suffix=pig
+EXTRACTLINES=$((${LINES}/3))
+sort -S 1G -R $1 | head -n $EXTRACTLINES > pig-shrinked.train
 cd -
